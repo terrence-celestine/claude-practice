@@ -1,0 +1,57 @@
+[
+  {
+    "id": "TICKET-8322",
+    "title": "Checkout Page Infinite Loop Bug",
+    "type": "Bug",
+    "priority": "Low",
+    "description": "Users are experiencing an infinite loop on the checkout page, preventing order completion. Investigate redirect logic, state management, and any recursive API calls in the checkout flow. Reproduce the loop, identify the root cause, and apply a fix with regression tests.",
+    "status": "In Progress",
+    "createdAt": "11:34:48 AM"
+  },
+  {
+    "id": "TICKET-4523",
+    "title": "Checkout Page Infinite Loop Bug",
+    "type": "Bug",
+    "priority": "Low",
+    "description": "Users are experiencing an infinite loop on the checkout page. Investigate redirect logic, state management, and any recursive API calls in the checkout flow. Reproduce the loop, identify the root cause, and apply a fix with regression tests.",
+    "status": "To Do",
+    "createdAt": "11:54:54 AM",
+    "assignTo": "Terrence"
+  },
+  {
+    "id": "TICKET-4452",
+    "title": "List View for Tickets",
+    "type": "Feature",
+    "priority": "Medium",
+    "description": "Build a list view for tickets, providing users with an alternative way to browse and manage tickets in a structured, scannable format.",
+    "status": "In Validation",
+    "createdAt": "11:59:44 AM"
+  },
+  {
+    "id": "TICKET-1548",
+    "title": "User Profiles Feature",
+    "type": "Feature",
+    "priority": "Medium",
+    "description": "Implement user profile functionality. Includes creating profile data model, profile creation/edit UI, avatar upload support, and profile view page. Ensure proper authentication checks so users can only edit their own profiles.",
+    "status": "Under Review",
+    "createdAt": "1:42:31 PM"
+  },
+  {
+    "id": "TICKET-8764",
+    "description": "Implement user profile functionality. Includes creating profile data model, profile creation/edit UI, avatar upload support, and profile view page. Ensure proper authentication checks so users can only edit their own profiles.",
+    "priority": "Medium",
+    "title": "User Profiles Feature",
+    "type": "Feature",
+    "status": "In Progress",
+    "createdAt": "1:43:18 PM"
+  },
+  {
+    "id": "TICKET-2238",
+    "title": "Dashboard",
+    "type": "Feature",
+    "priority": "Low",
+    "description": "Implement dashboard feature functionality.",
+    "status": "Done",
+    "createdAt": "1:58:12 PM"
+  }
+]
