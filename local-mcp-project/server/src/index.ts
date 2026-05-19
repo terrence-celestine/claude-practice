@@ -1,6 +1,6 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { CallToolRequestSchema, ListToolsRequestSchema, ListPromptsRequestSchema, GetPromptRequestParamsSchema, GetPromptRequestSchema } from "@modelcontextprotocol/sdk/types.js";
+import { CallToolRequestSchema, ListToolsRequestSchema, ListPromptsRequestSchema, GetPromptRequestSchema, ListResourcesRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import express from "express";
 import cors from "cors";
 import fs from "fs";
@@ -161,7 +161,7 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
   // --- ROUTE B: UPDATE TASK (NEW UPDATE ROUTE) ---
   if (request.params.name === "update_sprint_task") {
-    const args = request.params.arguments as { id: string; status?: string; priority?: string; description?: string, assignTo?: string };
+    const args = request.params.arguments as { id: string; status?: string; priority?: string; description?: string, assignTo?: string, title?: string };
     
     if (!args || !args.id) {
       return {
@@ -181,10 +181,12 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
         isError: true
       };
     }
+    
       if (args.status) data[ticketIndex].status = args.status;
       if (args.priority) data[ticketIndex].priority = args.priority;
       if (args.description) data[ticketIndex].description = args.description; 
       if (args.assignTo) data[ticketIndex].assignTo = args.assignTo;
+      if (args.title) data[ticketIndex].title = args.title;
       fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 
       // 4. FIX: Return a formal success response to stop the stream from falling through

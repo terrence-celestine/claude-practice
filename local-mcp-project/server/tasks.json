@@ -53,5 +53,15 @@
     "description": "Implement dashboard feature functionality.",
     "status": "Done",
     "createdAt": "1:58:12 PM"
+  },
+  {
+    "id": "TICKET-1816",
+    "title": "Terrence: Learn System Design",
+    "description": "foo",
+    "priority": "Medium",
+    "type": "Chore",
+    "assignTo": "Norma",
+    "status": "To Do",
+    "createdAt": "8:29:21 PM"
   }
 ]
