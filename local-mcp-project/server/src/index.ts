@@ -191,7 +191,7 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
     const targetId = String(args.id).toUpperCase();
     const rawData = fs.readFileSync(DATA_FILE, "utf-8");
     const data = JSON.parse(rawData);
-    const ticketIndex = data.findIndex((ticket: { id: string }) => ticket.id.toUpperCase() === args.id);
+    const ticketIndex = data.findIndex((ticket: { id: string }) => ticket.id.toUpperCase() === targetId);
 
     if (ticketIndex === -1) {
       return {

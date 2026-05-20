@@ -9,16 +9,6 @@
     "createdAt": "11:34:48 AM"
   },
   {
-    "id": "TICKET-4523",
-    "title": "Checkout Page Infinite Loop Bug",
-    "type": "Bug",
-    "priority": "Low",
-    "description": "Users are experiencing an infinite loop on the checkout page. Investigate redirect logic, state management, and any recursive API calls in the checkout flow. Reproduce the loop, identify the root cause, and apply a fix with regression tests.",
-    "status": "To Do",
-    "createdAt": "11:54:54 AM",
-    "assignTo": "Terrence"
-  },
-  {
     "id": "TICKET-4452",
     "title": "List View for Tickets",
     "type": "Feature",
