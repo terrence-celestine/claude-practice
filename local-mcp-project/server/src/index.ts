@@ -1,11 +1,12 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { CallToolRequestSchema, ListToolsRequestSchema, ListPromptsRequestSchema, GetPromptRequestSchema, ListResourcesRequestSchema } from "@modelcontextprotocol/sdk/types.js";
+import { CallToolRequestSchema, ListToolsRequestSchema, ListPromptsRequestSchema, GetPromptRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import express from "express";
 import cors from "cors";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { TICKET_TYPE, TICKET_PRIORITY, TICKET_STATUS } from "../src/constants.js";
 
 // 1. Convert the absolute file URL of this running script into a standard Windows path string
 const __filename = fileURLToPath(import.meta.url);
@@ -102,12 +103,13 @@ mcpServer.setRequestHandler(ListToolsRequestSchema, async () => {
           type: "object",
           properties: {
             title: { type: "string", description: "The name of the ticket" },
-            type: { type: "string", enum: ["Feature", "Bug", "Chore"] },
-            priority: { type: "string", enum: ["Low", "Medium", "High"] },
+            type: { type: "string", enum: [...TICKET_TYPE] },
+            priority: { type: "string", enum: [...TICKET_PRIORITY] },
             description: { type: "string", description: "Technical implementation notes" },
             assignTo: { type: "string", description: "The team member this ticket should be assigned to" }
           },
-          required: ["title", "type", "priority", "description"]
+          required: ["title", "type", "priority", "description"],
+          optional: ["assignTo"]
         }
       },
       {
@@ -116,7 +118,12 @@ mcpServer.setRequestHandler(ListToolsRequestSchema, async () => {
         inputSchema: {
           type: "object",
           properties: {
-            id: { type: "string", description: "The ID of the ticket to update" }
+            id: { type: "string", description: "The ID of the ticket to update" },
+            status: { type: "string", enum: [...TICKET_STATUS], description: "The new status of the ticket" },
+            priority: { type: "string", enum: [...TICKET_PRIORITY], description: "The new priority of the ticket" },
+            description: { type: "string", description: "The new description of the ticket" },
+            assignTo: { type: "string", description: "The new assignee of the ticket" },
+            title: { type: "string", description: "The new title of the ticket" }
           },
           required: ["id"]
         }

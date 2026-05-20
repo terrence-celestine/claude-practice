@@ -6,7 +6,7 @@ interface Ticket {
   type: "Feature" | "Bug" | "Chore";
   priority: "Low" | "Medium" | "High";
   description: string;
-  status: "To Do" | "In Progress" | "Done";
+  status: "To Do" | "In Progress" | "Done" | "Under Review" | "In Validation" | "Blocked";
   assignTo?: string;
   createdAt: string;
 }
@@ -37,6 +37,7 @@ export default function App() {
       case "Done": return "#2ecc71";
       case "In Validation": return "#f39c12";
       case "Under Review": return "#9b59b6";
+      case "Blocked": return "#e74c3c";
       default: return "#95a5a6"; // To Do
     }
   };
