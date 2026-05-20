@@ -6,7 +6,7 @@ import cors from "cors";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { TICKET_TYPE, TICKET_PRIORITY, TICKET_STATUS } from "../src/constants.js";
+import { TICKET_TYPE, TICKET_PRIORITY, TICKET_STATUS } from "./constants.js";
 
 // 1. Convert the absolute file URL of this running script into a standard Windows path string
 const __filename = fileURLToPath(import.meta.url);
@@ -138,6 +138,17 @@ mcpServer.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           required: ["id"]
         }
+      },
+      {
+        name: "delete_sprint_task",
+        description: "Deletes a specific sprint task from the user's project file.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            id: { type: "string", description: "The ID of the ticket to delete" }
+          },
+          required: ["id"]
+        }
       }
     ]
   };
@@ -229,6 +240,22 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
         }
       ]
     };
+  }
+  if (request.params.name === "delete_sprint_task") {
+    const args = request.params.arguments as { id: string };
+    if (!args || !args.id) {
+      return { content: [{ type: "text", text: "❌ Failure: Ticket ID parameter is required." }], isError: true };
+    }
+    const rawData = fs.readFileSync(DATA_FILE, "utf-8");
+    const targetId = String(args.id).toUpperCase();
+    const data = JSON.parse(rawData);
+    const ticketIndex = data.findIndex((t: { id: string }) => t.id.toUpperCase() === targetId);
+    if (ticketIndex === -1) {
+      return { content: [{ type: "text", text: `❌ Failure: Ticket with ID ${targetId} could not be located on disk.` }], isError: true };
+    }
+    data.splice(ticketIndex, 1);
+    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+    return { content: [{ type: "text", text: `✅ Successfully deleted ticket ${targetId}.` }] };
   }
   throw new Error("Requested tool not found.");
 });
