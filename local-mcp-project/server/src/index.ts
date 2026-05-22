@@ -73,8 +73,8 @@ mcpServer.setRequestHandler(GetPromptRequestSchema, async (request) => {
       messages: [
         {
           role: "user",
-          content: { type: "text", text: `Here are the current sprint tasks with status '${status}':\n\n${JSON.stringify(filteredTasks, null, 2)} 
-            Please display these items to the user in a clean, highly readable Markdown table. Include the ID, Title, Priority, and Assignee for each item. If no tasks match, politely inform the user.` }
+          content: [{ type: "text", text: `Here are the current sprint tasks with status '${status}':\n\n${JSON.stringify(filteredTasks, null, 2)} 
+            Please display these items to the user in a clean, highly readable Markdown table. Include the ID, Title, Priority, and Assignee for each item. If no tasks match, politely inform the user.` }]
         }
       ]
     };
@@ -83,7 +83,7 @@ mcpServer.setRequestHandler(GetPromptRequestSchema, async (request) => {
       description: "An error occurred while retrieving tasks.",
        messages: [
         { role: "user", 
-          content: { type: "text", text: "❌ Failure: An error occurred while retrieving tasks. Please try again later." }
+          content: [{ type: "text", text: "❌ Failure: An error occurred while retrieving tasks. Please try again later." }]
         }
        ]
     };
@@ -108,8 +108,7 @@ mcpServer.setRequestHandler(ListToolsRequestSchema, async () => {
             description: { type: "string", description: "Technical implementation notes" },
             assignTo: { type: "string", description: "The team member this ticket should be assigned to" }
           },
-          required: ["title", "type", "priority", "description"],
-          optional: ["assignTo"]
+          required: ["title", "type", "priority", "description"]
         }
       },
       {
@@ -149,6 +148,28 @@ mcpServer.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           required: ["id"]
         }
+      },
+      {  
+        name: "list_sprint_tasks_by_assignee",
+        description: "Lists all sprint tasks by assignee.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            assignee: { type: "string", description: "The assignee to filter tasks by" }
+          },
+          required: ["assignee"]
+        }
+      },
+      {
+        name: "list_sprint_tasks_by_status",
+        description: "Lists all sprint tasks by status.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            status: { type: "string", enum: [...TICKET_STATUS], description: "The status to filter tasks by" }
+          },
+          required: ["status"]
+        }
       }
     ]
   };
@@ -158,7 +179,7 @@ mcpServer.setRequestHandler(ListToolsRequestSchema, async () => {
 mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
   // --- ROUTE A: ADD TASK ---
   if (request.params.name === "add_sprint_task") {
-    const args = request.params.arguments as { title: string; type: string; priority: string; description: string };
+    const args = request.params.arguments as { title: string; type: string; priority: string; description: string, assignTo?: string};
     
     const rawData = fs.readFileSync(DATA_FILE, "utf-8");
     const data = JSON.parse(rawData);
@@ -167,7 +188,8 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
       id: `TICKET-${Date.now().toString().slice(-4)}`,
       ...args,
       status: "To Do",
-      createdAt: new Date().toLocaleTimeString()
+      createdAt: new Date().toLocaleTimeString(),
+      ...(args.assignTo?.trim() ? { assignTo: args.assignTo.trim() } : {})
     };
 
     data.push(newTicket);
@@ -241,6 +263,7 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
       ]
     };
   }
+  // --- ROUTE D: DELETE TASK ---
   if (request.params.name === "delete_sprint_task") {
     const args = request.params.arguments as { id: string };
     if (!args || !args.id) {
@@ -256,6 +279,38 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
     data.splice(ticketIndex, 1);
     fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
     return { content: [{ type: "text", text: `✅ Successfully deleted ticket ${targetId}.` }] };
+  }
+  // --- ROUTE E: LIST ALL TASKS BY STATUS ---
+  if (request.params.name === "list_sprint_tasks_by_status") {
+    const args = request.params.arguments as { status: string };
+    if (!args || !args.status) {
+      return { content: [{ type: "text", text: "❌ Failure: Status parameter is required." }], isError: true };
+    }
+    const rawData = fs.readFileSync(DATA_FILE, "utf-8");
+    const data = JSON.parse(rawData);
+    const filteredTasks = data.filter(
+      (t: { status?: string }) =>
+        typeof t.status === "string" &&
+        t.status.toUpperCase() === args.status.trim().toUpperCase()
+    );
+    if (filteredTasks.length === 0) {
+      return { content: [{ type: "text", text: `No tasks found with status '${args.status}'.` }] };
+    }
+    return { content: [{ type: "text", text: `🔍 Found ${filteredTasks.length} tasks with status '${args.status}'\n${JSON.stringify(filteredTasks, null, 2)}` }] };
+  }
+  // --- ROUTE F: LIST ALL TASKS BY ASSIGNEE---
+  if (request.params.name === "list_sprint_tasks_by_assignee") {
+    const args = request.params.arguments as { assignee: string };
+    if (!args || !args.assignee) {
+      return { content: [{ type: "text", text: "❌ Failure: Assignee parameter is required." }], isError: true };
+    }
+    const rawData = fs.readFileSync(DATA_FILE, "utf-8");
+    const data = JSON.parse(rawData);
+    const filteredTasks = data.filter((t: { assignTo?: string }) => typeof t.assignTo === "string" && t.assignTo.toLowerCase() === args.assignee.trim().toLowerCase());
+    if (filteredTasks.length === 0) {
+      return { content: [{ type: "text", text: `No tasks found assigned to '${args.assignee}'.` }] };
+    }
+    return { content: [{ type: "text", text: `🔍 Found ${filteredTasks.length} tasks assigned to '${args.assignee}'\n${JSON.stringify(filteredTasks, null, 2)}` }] };
   }
   throw new Error("Requested tool not found.");
 });

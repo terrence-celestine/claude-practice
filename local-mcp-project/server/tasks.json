@@ -6,7 +6,8 @@
     "priority": "Low",
     "description": "Users are experiencing an infinite loop on the checkout page, preventing order completion. Investigate redirect logic, state management, and any recursive API calls in the checkout flow. Reproduce the loop, identify the root cause, and apply a fix with regression tests.",
     "status": "In Progress",
-    "createdAt": "11:34:48 AM"
+    "createdAt": "11:34:48 AM",
+    "assignTo": "Terrence"
   },
   {
     "id": "TICKET-4452",
@@ -15,7 +16,8 @@
     "priority": "Medium",
     "description": "Build a list view for tickets, providing users with an alternative way to browse and manage tickets in a structured, scannable format.",
     "status": "In Validation",
-    "createdAt": "11:59:44 AM"
+    "createdAt": "11:59:44 AM",
+    "assignTo": "Terrence"
   },
   {
     "id": "TICKET-1548",

@@ -3,3 +3,5 @@ export const TICKET_STATUS = ["To Do", "In Progress", "Done", "Under Review", "I
 export const TICKET_PRIORITY = ["Low", "Medium", "High"] as const;
 
 export const TICKET_TYPE = ["Feature", "Bug", "Chore"] as const;
+
+export type TicketStatus = (typeof TICKET_STATUS)[number];
